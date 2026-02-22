@@ -52,7 +52,6 @@ export default function Dashboard() {
 
       if (data) {
         setOrcamentoData(data);
-        console.log(data);
         if (data.total === null || data.total === "") {
           toast.success(
             "O orçamento que você está tentando imprimir não contém o valor total; você será redirecionado para editá-lo.",
