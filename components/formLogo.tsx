@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Checkbox } from "./ui/checkbox";
+import { ChevronDownIcon } from "lucide-react";
 
 interface Services {
   id: string;
@@ -131,7 +132,7 @@ export default function FormLogo() {
       return;
     }
 
-    toast.success("Orçamento salvo com serviços!");
+    toast.success("Orçamento salvo com sucesso!");
   };
 
   useEffect(() => {
@@ -155,7 +156,7 @@ export default function FormLogo() {
           Administracao
         </Button> */}
       </div>
-      <div className="rounded-lg overflow-hidden bg-background-form">
+      <div className="rounded-lg overflow-hidden bg-background-form" id="formulario">
         <h1 className="text-text text-xl md:text-2xl text-center p-4 font-bold font-form">
           FORMULARIO PARA ORÇAMENTO PERSONALIZADO
         </h1>

@@ -226,7 +226,7 @@ export default function EditOrcamentoPage() {
                     className="w-full border p-2 rounded"
                   />
                   <Button type="submit" className="w-full">
-                    Guardar cambios y Gerar Orçamento
+                    Salvar alterações e Gerar Orçamento
                   </Button>
                 </form>
               </CardContent>
