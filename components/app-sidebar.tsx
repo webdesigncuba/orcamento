@@ -42,13 +42,13 @@ const data = {
       url: "/dashboard",
       icon: IconDashboard,
     },
+   // {
+     // title: "Orcamentos Enviados",
+    //  url: "",
+    //  icon: IconListDetails,
+   // },
     {
-      title: "Orcamentos Enviados",
-      url: "",
-      icon: IconListDetails,
-    },
-    {
-      title: "Orcamentos Pendentes",
+      title: "Orcamentos ",
       url: "/dashboard/orcamento",
       icon: IconChartBar,
     },

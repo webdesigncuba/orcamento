@@ -1,12 +1,18 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/lib/supabaseClients";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 interface Orcamento {
@@ -16,14 +22,14 @@ interface Orcamento {
   localization: string;
   medid: string;
   observation: string;
-  total: string ;
+  total: string;
+  status: string;
 }
 
 interface Servico {
   id: string;
   nome: string;
 }
-
 
 interface OrcamentoService {
   id: string;
@@ -71,54 +77,56 @@ export default function EditOrcamentoPage() {
   }, [id]);
 
   const handleSave = async () => {
-  if (!orcamentoData) return;
+    if (!orcamentoData) return;
 
-  // Actualizar orçamento
-  await supabase
-    .from("ocamento")
-    .update(orcamentoData)
-    .eq("id", orcamentoData.id);
-
-  // Traer asociaciones actuales
-  const { data: currentAssociations, error: currentError } = await supabase
-    .from("orcamento_servicos")
-    .select("servico_id")
-    .eq("orcamento_id", orcamentoData.id);
-
-  if (currentError) {
-    console.error("Error al traer asociaciones:", currentError);
-    return;
-  }
-
-  const currentIds = currentAssociations?.map((s) => String(s.servico_id)) || [];
-
-  // Calcular diferencias
-  const toInsert = selectedServices.filter((id) => !currentIds.includes(id));
-  const toDelete = currentIds.filter((id) => !selectedServices.includes(id));
-
-  // Eliminar solo los que se desmarcaron
-  if (toDelete.length > 0) {
+    orcamentoData.status = 'generated'
+    // Actualizar orçamento
     await supabase
+      .from("ocamento")
+      .update(orcamentoData)
+      .eq("id", orcamentoData.id);
+
+    // Traer asociaciones actuales
+    const { data: currentAssociations, error: currentError } = await supabase
       .from("orcamento_servicos")
-      .delete()
-      .eq("orcamento_id", orcamentoData.id)
-      .in("servico_id", toDelete);
-  }
+      .select("servico_id")
+      .eq("orcamento_id", orcamentoData.id);
 
-  // Insertar solo los nuevos seleccionados
-  if (toInsert.length > 0) {
-    const newAssociations = toInsert.map((servicoId) => ({
-      orcamento_id: orcamentoData.id,
-      servico_id: servicoId,
-      preco_unitario: 0
-    }));
-    console.log('Asociacion',newAssociations);
-    await supabase.from("orcamento_servicos").insert(newAssociations);
-  }
+    if (currentError) {
+      console.error("Error al traer asociaciones:", currentError);
+      return;
+    }
 
-  // Redirigir al template dinámico pdf/[id]
-  router.push(`/dashboard/orcamento/pdf/${orcamentoData.id}`);
-};
+    const currentIds =
+      currentAssociations?.map((s) => String(s.servico_id)) || [];
+
+    // Calcular diferencias
+    const toInsert = selectedServices.filter((id) => !currentIds.includes(id));
+    const toDelete = currentIds.filter((id) => !selectedServices.includes(id));
+
+    // Eliminar solo los que se desmarcaron
+    if (toDelete.length > 0) {
+      await supabase
+        .from("orcamento_servicos")
+        .delete()
+        .eq("orcamento_id", orcamentoData.id)
+        .in("servico_id", toDelete);
+    }
+
+    // Insertar solo los nuevos seleccionados
+    if (toInsert.length > 0) {
+      const newAssociations = toInsert.map((servicoId) => ({
+        orcamento_id: orcamentoData.id,
+        servico_id: servicoId,
+        preco_unitario: 0,
+      }));
+      console.log("Asociacion", newAssociations);
+      await supabase.from("orcamento_servicos").insert(newAssociations);
+    }
+
+    // Redirigir al template dinámico pdf/[id]
+    router.push(`/dashboard/orcamento/pdf/${orcamentoData.id}`);
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
@@ -151,25 +159,28 @@ export default function EditOrcamentoPage() {
                   />
                   <Label>Serviço</Label>
                   <div className="space-y-2 mb-4">
-        {servicos.map((servico) => (
-          <div key={servico.id} className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={selectedServices.includes(servico.id)}
-              onChange={(e) => {
-                if (e.target.checked) {
-                  setSelectedServices((prev) => [...prev, servico.id]);
-                } else {
-                  setSelectedServices((prev) =>
-                    prev.filter((id) => id !== servico.id)
-                  );
-                }
-              }}
-            />
-            <span>{servico.nome}</span>
-          </div>
-        ))}
-      </div>
+                    {servicos.map((servico) => (
+                      <div key={servico.id} className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={selectedServices.includes(servico.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedServices((prev) => [
+                                ...prev,
+                                servico.id,
+                              ]);
+                            } else {
+                              setSelectedServices((prev) =>
+                                prev.filter((id) => id !== servico.id),
+                              );
+                            }
+                          }}
+                        />
+                        <span>{servico.nome}</span>
+                      </div>
+                    ))}
+                  </div>
 
                   <Label>Localização</Label>
                   <Input

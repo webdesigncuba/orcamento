@@ -1,4 +1,5 @@
 'use client'
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/lib/supabaseClients";
@@ -18,6 +19,7 @@ interface Orcamento {
 
 export default function New(){
     const router = useRouter();
+    const [status, setStatus] = useState("");
     const [orcamentoData, setOrcamentoData] = useState<Orcamento []>([]);
     
     const handleEdit = async(id:string) => {
@@ -30,11 +32,11 @@ export default function New(){
         const { data, error } = await supabase
         .from('ocamento')
         .select("*")
-        .eq('status','new')
         if(error){
           toast.error('Erro na obtenção de orçamentos')
         }else{
           setOrcamentoData(data);
+          
         }
       }
       fetchOrcamentoNew();
@@ -53,6 +55,7 @@ export default function New(){
                       <TableHead className="w-[100px]">Nome</TableHead>
                       <TableHead>Localização</TableHead>
                       <TableHead>Medidas</TableHead>
+                      <TableHead>Estado</TableHead>
                       <TableHead>Total</TableHead>
                       <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
@@ -63,13 +66,28 @@ export default function New(){
                         <TableCell>{orcamento.name}</TableCell>
                         <TableCell>{orcamento.localization}</TableCell>
                         <TableCell>{orcamento.medid}</TableCell>
+                        {orcamento.status === "new" && (
+                          <TableCell>
+                            <Badge>Novo</Badge>
+                          </TableCell>
+                        )}
+
+                        {orcamento.status === "generated" && (
+                          <TableCell>
+                            <Badge variant="secondary">Generado</Badge>
+                          </TableCell>
+                        )}
                         <TableCell>{orcamento.total}</TableCell>
                         <TableCell className="text-right space-x-2">
-                          <Button size="sm">Ver</Button>
-                          <Button size="sm" onClick={() => {handleEdit(orcamento.id)}}>Editar</Button>
-                          {orcamento.total !== null && (
-                            <Button size="sm">Gerar</Button>
-                          )}
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              handleEdit(orcamento.id);
+                            }}
+                          >
+                            Editar
+                          </Button>
+                         
                         </TableCell>
                       </TableRow>
                     ))}
@@ -97,11 +115,14 @@ export default function New(){
                       <strong>Total:</strong> R$ {orcamento.total}
                     </p>
                     <div className="flex justify-end gap-2 mt-2">
-                      <Button size="sm">Ver</Button>
-                      <Button size="sm">Editar</Button>
-                      {orcamento.total !== null && (
-                        <Button size="sm">Gerar</Button>
-                      )}
+                     <Button
+                            size="sm"
+                            onClick={() => {
+                              handleEdit(orcamento.id);
+                            }}
+                          >
+                            Editar
+                      </Button>
                     </div>
                   </div>
                 ))}
