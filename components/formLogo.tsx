@@ -26,7 +26,6 @@ interface FormData {
   observation: string;
   total: string;
   status: string;
-  number: string;
   services: string[]; // 👈 precisa ser um array
 }
 
@@ -39,7 +38,6 @@ export default function FormLogo() {
     observation: "",
     total: "",
     status: "new",
-    number: "",
     services: [], // 👈 inicializa como array
   });
 
@@ -102,7 +100,7 @@ export default function FormLogo() {
           name: formData.name,
           localization: formData.localization,
           medid: formData.medid,
-          status: "new",
+          status:'new',
           observation: formData.observation,
           number: nextNumber,
         },
@@ -154,18 +152,9 @@ export default function FormLogo() {
           height={500}
           className="mt-10 w-full max-w-xs md:max-w-md"
         />
-        <Button
-          className=" flex items-center justify-center gap-2 rounded-full md:hidden"
-          onClick={() => {
-            const form = document.getElementById("formulario");
-            if (form) {
-              form.scrollIntoView({ behavior: "smooth" });
-            }
-          }}
-        >
-          Faça seu orçamento
-          <ChevronDownIcon className="w-5 h-5" />
-        </Button>
+      {/*  <Button className="w-full" onClick={() => router.push("/login")}>
+          Administracao
+        </Button> */}
       </div>
       <div className="rounded-lg overflow-hidden bg-background-form" id="formulario">
         <h1 className="text-text text-xl md:text-2xl text-center p-4 font-bold font-form">
