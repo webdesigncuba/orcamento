@@ -48,7 +48,7 @@ const data = {
     //  icon: IconListDetails,
    // },
     {
-      title: "Orcamentos ",
+      title: "Orçamentos ",
       url: "/dashboard/orcamento",
       icon: IconChartBar,
     },

@@ -174,7 +174,6 @@ export default function OrcamentoPage() {
         </p>
       </div>
 
-
       <div
         style={{
           border: "1px solid #ccc",
@@ -201,6 +200,33 @@ export default function OrcamentoPage() {
         <p className="text-primary font-bold">Nome: {orcamentoData?.name}</p>
         <p className="text-primary font-bold">Endereço: {orcamentoData?.localization}</p>
       </div>
+       <div
+        style={{
+          border: "1px solid #ccc",
+          padding: "16px",
+          borderRadius: "8px",
+          display: "flex",
+          flexDirection: "column", // 👈 apila verticalmente
+          gap: "8px", // 👈 espacio entre elementos
+          marginBottom: "20px",
+        }}
+      >
+        <p
+          style={{
+            fontWeight: "500",
+            backgroundColor: "#44463e",
+            color: "#fff",
+            padding: "8px",
+            borderRadius: "4px",
+          }}
+        >
+          ENDEREÇO
+        </p>
+
+        <p className="text-primary font-bold">{orcamentoData?.localization}</p>
+      </div>
+
+     
       <div
         style={{
           border: "1px solid #ccc",
@@ -218,7 +244,7 @@ export default function OrcamentoPage() {
             borderRadius: "4px",
           }}
         >
-          ITEMS
+          ITENS
         </h3>
         <ul style={{ listStyle: "disc", paddingLeft: "20px" }}>
           {orcamentoServices.map((item) => (
@@ -226,6 +252,7 @@ export default function OrcamentoPage() {
           ))}
         </ul>
       </div>
+
       <div
         style={{
           border: "1px solid #ccc",
@@ -245,7 +272,7 @@ export default function OrcamentoPage() {
         >
           Observações
         </h3>
-        <p className="text-primary font-bold">Endereço: {orcamentoData?.observation}</p>
+        <p className="text-primary font-bold">{orcamentoData?.observation}</p>
       </div>
 
       <div
