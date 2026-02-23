@@ -24,6 +24,8 @@ interface FormData {
   medid: string;
   observation: string;
   total: string;
+  status: string;
+  number: string;
   services: string[]; // 👈 precisa ser um array
 }
 
@@ -35,6 +37,8 @@ export default function FormLogo() {
     medid: "",
     observation: "",
     total: "",
+    status: "new",
+    number: "",
     services: [], // 👈 inicializa como array
   });
 
@@ -65,19 +69,45 @@ export default function FormLogo() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 1. Insertar orçamento y obtener el registro creado
+    // 1. Buscar el último registro
+    const { data: lastRecord, error: lastError } = await supabase
+      .from("ocamento")
+      .select("number")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(); // 👈 usa maybeSingle para que no dé error si no hay registros
+
+    if (lastError) {
+      console.error("Error al obtener último número:", lastError.message);
+      toast.error("Erro ao gerar número do orçamento");
+      return;
+    }
+
+    // 2. Calcular el próximo número
+    const currentYear = new Date().getFullYear();
+    let nextNumber = `0001/${currentYear}`; // 👈 valor por defecto
+
+    if (lastRecord && lastRecord.number) {
+      const [num, year] = lastRecord.number.split("/");
+      const newNum = String(parseInt(num) + 1).padStart(4, "0");
+      nextNumber = `${newNum}/${currentYear}`;
+    }
+
+    // 3. Insertar orçamento con el número generado
     const { data: orcamento, error } = await supabase
-      .from("ocamento") // 👈 asegúrate que el nombre de la tabla sea correcto
+      .from("ocamento")
       .insert([
         {
           name: formData.name,
           localization: formData.localization,
           medid: formData.medid,
+          status: "new",
           observation: formData.observation,
+          number: nextNumber,
         },
       ])
       .select()
-      .single(); // 👈 esto devuelve el objeto recién insertado
+      .single();
 
     if (error) {
       console.error("Error al guardar:", error.message);
@@ -85,14 +115,13 @@ export default function FormLogo() {
       return;
     }
 
-    // 3. Insertar servicios relacionados en la tabla puente
+    // 4. Insertar servicios relacionados
     const orcamentoId = orcamento.id;
-
     const rows = formData.services.map((serviceId) => ({
       orcamento_id: orcamentoId,
       servico_id: serviceId,
       quantidade: 1,
-      preco_unitario: 0, // ajusta según tu lógica
+      preco_unitario: 0,
     }));
 
     const { error: servError } = await supabase
@@ -124,7 +153,7 @@ export default function FormLogo() {
           height={500}
           className="mt-10 w-full max-w-xs md:max-w-md"
         />
-      {/*  <Button className="w-full" onClick={() => router.push("/login")}>
+        {/*  <Button className="w-full" onClick={() => router.push("/login")}>
           Administracao
         </Button> */}
       </div>
@@ -189,7 +218,9 @@ export default function FormLogo() {
                   </FieldGroup>
 
                   <FieldGroup className="flex flex-col gap-2">
-                    <FieldLabel htmlFor="localization">Localização</FieldLabel>
+                    <FieldLabel htmlFor="localization">
+                      Endereço ou Barrio
+                    </FieldLabel>
                     <Input
                       id="localization"
                       name="localization"
