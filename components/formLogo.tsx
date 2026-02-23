@@ -12,25 +12,33 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Checkbox } from "./ui/checkbox";
 
-interface Services{
-  'id': string,
-  'nome': string,
-  "descricao": string,
-  "preco": string,
+interface Services {
+  id: string;
+  nome: string;
+  descricao: string;
+  preco: string;
+}
+interface FormData {
+  name: string;
+  localization: string;
+  medid: string;
+  observation: string;
+  total: string;
+  services: string[]; // 👈 precisa ser um array
 }
 
 export default function FormLogo() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: "",
     localization: "",
     medid: "",
     observation: "",
-    services: []
+    total: "",
+    services: [], // 👈 inicializa como array
   });
 
   const [services, setServices] = useState<Services[]>([]);
-
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -55,60 +63,53 @@ export default function FormLogo() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  // 1. Insertar orçamento y obtener el registro creado
-  const { data: orcamento, error } = await supabase
-    .from("ocamento") // 👈 asegúrate que el nombre de la tabla sea correcto
-    .insert([{
-      name: formData.name,
-      localization: formData.localization,
-      medid: formData.medid,
-      observation: formData.observation,
-    }])
-    .select()
-    .single(); // 👈 esto devuelve el objeto recién insertado
+    // 1. Insertar orçamento y obtener el registro creado
+    const { data: orcamento, error } = await supabase
+      .from("ocamento") // 👈 asegúrate que el nombre de la tabla sea correcto
+      .insert([
+        {
+          name: formData.name,
+          localization: formData.localization,
+          medid: formData.medid,
+          observation: formData.observation,
+        },
+      ])
+      .select()
+      .single(); // 👈 esto devuelve el objeto recién insertado
 
-  if (error) {
-    console.error("Error al guardar:", error.message);
-    toast.error("Erro ao guardar os dados");
-    return;
-  }
+    if (error) {
+      console.error("Error al guardar:", error.message);
+      toast.error("Erro ao guardar os dados");
+      return;
+    }
 
-  // 2. Limpiar formulario
-  setFormData({
-    name: "",
-    localization: "",
-    medid: "",
-    observation: "",
-    services: [], // 👈 asegúrate de resetear también los servicios
-  });
+    // 3. Insertar servicios relacionados en la tabla puente
+    const orcamentoId = orcamento.id;
 
-  // 3. Insertar servicios relacionados en la tabla puente
-  const orcamentoId = orcamento.id;
+    const rows = formData.services.map((serviceId) => ({
+      orcamento_id: orcamentoId,
+      servico_id: serviceId,
+      quantidade: 1,
+      preco_unitario: 0, // ajusta según tu lógica
+    }));
 
-  const rows = formData.services.map((serviceId) => ({
-    orcamento_id: orcamentoId,
-    servico_id: serviceId,
-    quantidade: 1,
-    preco_unitario: 0, // ajusta según tu lógica
-  }));
+    const { error: servError } = await supabase
+      .from("orcamento_servicos")
+      .insert(rows);
 
-  const { error: servError } = await supabase
-    .from("orcamento_servicos")
-    .insert(rows);
+    if (servError) {
+      toast.error("Erro ao salvar serviços do orçamento");
+      return;
+    }
 
-  if (servError) {
-    toast.error("Erro ao salvar serviços do orçamento");
-    return;
-  }
-
-  toast.success("Orçamento salvo com serviços!");
-};
+    toast.success("Orçamento salvo com serviços!");
+  };
 
   useEffect(() => {
-  getServices();
-}, []); 
+    getServices();
+  }, []);
 
   return (
     <div className="bg-foreground p-4 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
