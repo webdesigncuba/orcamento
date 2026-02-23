@@ -75,6 +75,7 @@ export default function FormLogo() {
           name: formData.name,
           localization: formData.localization,
           medid: formData.medid,
+          status:'new',
           observation: formData.observation,
         },
       ])
