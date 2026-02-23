@@ -25,7 +25,6 @@ interface FormData {
   observation: string;
   total: string;
   status: string;
-  number: string;
   services: string[]; // 👈 precisa ser um array
 }
 
@@ -38,7 +37,6 @@ export default function FormLogo() {
     observation: "",
     total: "",
     status: "new",
-    number: "",
     services: [], // 👈 inicializa como array
   });
 
@@ -101,7 +99,7 @@ export default function FormLogo() {
           name: formData.name,
           localization: formData.localization,
           medid: formData.medid,
-          status: "new",
+          status:'new',
           observation: formData.observation,
           number: nextNumber,
         },
@@ -153,7 +151,7 @@ export default function FormLogo() {
           height={500}
           className="mt-10 w-full max-w-xs md:max-w-md"
         />
-        {/*  <Button className="w-full" onClick={() => router.push("/login")}>
+      {/*  <Button className="w-full" onClick={() => router.push("/login")}>
           Administracao
         </Button> */}
       </div>
