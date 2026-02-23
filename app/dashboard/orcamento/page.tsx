@@ -75,7 +75,7 @@ export default function New(){
 
                         {orcamento.status === "generated" && (
                           <TableCell>
-                            <Badge variant="secondary">Generado</Badge>
+                            <Badge variant="secondary">Gerado</Badge>
                           </TableCell>
                         )}
                         <TableCell>{orcamento.total}</TableCell>
