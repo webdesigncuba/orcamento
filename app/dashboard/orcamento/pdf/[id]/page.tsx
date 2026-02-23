@@ -14,7 +14,7 @@ interface Orcamento {
   medid: string;
   observation: string;
   total: string;
-  number:string;
+  number: string;
   created_at: string;
 }
 
@@ -25,14 +25,12 @@ interface OrcamentoServico {
   servicos: { nome: string }; // 👈 array
 }
 
-
-
-
-
 export default function OrcamentoPage() {
   const { id } = useParams();
   const [orcamentoData, setOrcamentoData] = useState<Orcamento | null>(null);
-  const [orcamentoServices, setOrcamentoServices] = useState<OrcamentoServico[]>([]);
+  const [orcamentoServices, setOrcamentoServices] = useState<
+    OrcamentoServico[]
+  >([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,38 +56,36 @@ export default function OrcamentoPage() {
           ) // 👈 join con la tabla servicos
           .eq("orcamento_id", data.id);
         if (!servicosError && servicosData) {
-          setOrcamentoServices(servicosData as unknown as OrcamentoServico[])
+          setOrcamentoServices(servicosData as unknown as OrcamentoServico[]);
           console.log(servicosData);
         } else {
           console.log(servicosError);
         }
-
       }
     };
     if (id) fetchData();
   }, [id, orcamentoServices]);
 
   useEffect(() => {
-  if (orcamentoServices.length > 0 && orcamentoData) {
-    const generatePDF = async () => {
-      const element = document.getElementById("orcamento-layout");
-      if (!element) return;
+    if (orcamentoServices.length > 0 && orcamentoData) {
+      const generatePDF = async () => {
+        const element = document.getElementById("orcamento-layout");
+        if (!element) return;
 
-      const canvas = await html2canvas(element, { scale: 2 });
-      const imgData = canvas.toDataURL("image/png");
+        const canvas = await html2canvas(element, { scale: 2 });
+        const imgData = canvas.toDataURL("image/png");
 
-      const pdf = new jsPDF("p", "mm", "a4");
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
+        const pdf = new jsPDF("p", "mm", "a4");
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
 
-      pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pageHeight);
-      pdf.save(`orcamento-${orcamentoData.id}.pdf`);
-    };
+        pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pageHeight);
+        pdf.save(`orcamento-${orcamentoData.id}.pdf`);
+      };
 
-    generatePDF();
-  }
-}, [orcamentoData, orcamentoServices]); // 👈 escucha ambos
-
+      generatePDF();
+    }
+  }, [orcamentoData, orcamentoServices]); // 👈 escucha ambos
 
   return (
     <div
@@ -112,23 +108,24 @@ export default function OrcamentoPage() {
           paddingBottom: "16px",
         }}
       >
-        <div>
+        <div style={{ position: "relative" }}>
           <img
             src="/logo.jpg"
             alt="Logo"
-            width={100}
-            height={100}
-            style={{ marginTop: "20px" }}
+            width={300}
+            height={300}
+            style={{ marginTop: "-19px" }}
           />
         </div>
 
         <div
           style={{
-            marginLeft: "auto",
+            position: "absolute",
+            right: "250px",
+            top: "99px",
             fontSize: "14px",
             padding: "16px",
             borderRadius: "8px",
-            marginTop: "20px",
             backgroundColor: "#44463e",
             color: "#f1ecec",
           }}
@@ -156,10 +153,8 @@ export default function OrcamentoPage() {
           fontWeight: "600",
         }}
       >
-        <p >
-          Orçamento: {orcamentoData?.number}
-        </p>
-        
+        <p>Orçamento: {orcamentoData?.number}</p>
+
         <p style={{ textAlign: "left" }}>
           Data:{" "}
           {orcamentoData?.created_at
@@ -198,9 +193,8 @@ export default function OrcamentoPage() {
         </p>
 
         <p className="text-primary font-bold">Nome: {orcamentoData?.name}</p>
-        <p className="text-primary font-bold">Endereço: {orcamentoData?.localization}</p>
       </div>
-       <div
+      <div
         style={{
           border: "1px solid #ccc",
           padding: "16px",
@@ -226,7 +220,6 @@ export default function OrcamentoPage() {
         <p className="text-primary font-bold">{orcamentoData?.localization}</p>
       </div>
 
-     
       <div
         style={{
           border: "1px solid #ccc",
@@ -236,7 +229,7 @@ export default function OrcamentoPage() {
         }}
       >
         <h3
-         style={{
+          style={{
             fontWeight: "500",
             backgroundColor: "#44463e",
             color: "#fff",
@@ -248,7 +241,9 @@ export default function OrcamentoPage() {
         </h3>
         <ul style={{ listStyle: "disc", paddingLeft: "20px" }}>
           {orcamentoServices.map((item) => (
-            <li key={item.id} className="text-primary text-font">{item.servicos.nome}</li>
+            <li key={item.id} className="text-primary text-font">
+              {item.servicos.nome}
+            </li>
           ))}
         </ul>
       </div>
@@ -262,7 +257,7 @@ export default function OrcamentoPage() {
         }}
       >
         <h3
-         style={{
+          style={{
             fontWeight: "500",
             backgroundColor: "#44463e",
             color: "#fff",
