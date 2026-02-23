@@ -8,18 +8,29 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/lib/supabaseClients";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { Checkbox } from "./ui/checkbox";
+
+interface Services{
+  'id': string,
+  'nome': string,
+  "descricao": string,
+  "preco": string,
+}
 
 export default function FormLogo() {
   const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
-    services: "",
     localization: "",
     medid: "",
     observation: "",
+    services: []
   });
+
+  const [services, setServices] = useState<Services[]>([]);
+
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -30,27 +41,74 @@ export default function FormLogo() {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const getServices = async () => {
+    const { data, error } = await supabase.from("servicos").select("*");
 
-    const { data, error } = await supabase
-      .from("ocamento") // nombre de tu tabla en Supabase
-      .insert([formData]); // aquí insertamos todo el objeto
     if (error) {
-      console.error("Error al guardar:", error.message);
-      toast.error("Erro a o guardar os dados");
-    } else {
-      toast.success("Solicitud enviada com sucesso");
-      // limpiar formulario
-      setFormData({
-        name: "",
-        services: "",
-        localization: "",
-        medid: "",
-        observation: "",
-      });
+      toast.error("Erro ao pesquisar os serviços");
+      return;
+    }
+
+    if (data) {
+      setServices(data);
     }
   };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  // 1. Insertar orçamento y obtener el registro creado
+  const { data: orcamento, error } = await supabase
+    .from("ocamento") // 👈 asegúrate que el nombre de la tabla sea correcto
+    .insert([{
+      name: formData.name,
+      localization: formData.localization,
+      medid: formData.medid,
+      observation: formData.observation,
+    }])
+    .select()
+    .single(); // 👈 esto devuelve el objeto recién insertado
+
+  if (error) {
+    console.error("Error al guardar:", error.message);
+    toast.error("Erro ao guardar os dados");
+    return;
+  }
+
+  // 2. Limpiar formulario
+  setFormData({
+    name: "",
+    localization: "",
+    medid: "",
+    observation: "",
+    services: [], // 👈 asegúrate de resetear también los servicios
+  });
+
+  // 3. Insertar servicios relacionados en la tabla puente
+  const orcamentoId = orcamento.id;
+
+  const rows = formData.services.map((serviceId) => ({
+    orcamento_id: orcamentoId,
+    servico_id: serviceId,
+    quantidade: 1,
+    preco_unitario: 0, // ajusta según tu lógica
+  }));
+
+  const { error: servError } = await supabase
+    .from("orcamento_servicos")
+    .insert(rows);
+
+  if (servError) {
+    toast.error("Erro ao salvar serviços do orçamento");
+    return;
+  }
+
+  toast.success("Orçamento salvo com serviços!");
+};
+
+  useEffect(() => {
+  getServices();
+}, []); 
 
   return (
     <div className="bg-foreground p-4 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
@@ -65,7 +123,9 @@ export default function FormLogo() {
           height={500}
           className="mt-10 w-full max-w-xs md:max-w-md"
         />
-        <Button className="w-full" onClick={() => router.push('/login')}>Administracao</Button>
+        <Button className="w-full" onClick={() => router.push("/login")}>
+          Administracao
+        </Button>
       </div>
       <div className="rounded-lg overflow-hidden bg-background-form">
         <h1 className="text-text text-xl md:text-2xl text-center p-4 font-bold font-form">
@@ -98,45 +158,33 @@ export default function FormLogo() {
                     <Label className="text-text font-medium font-form text-sm md:text-base">
                       Qual serviço deseja orçamento personalizado?
                     </Label>
-                    <RadioGroup
-                      value={formData.services}
-                      onValueChange={(val) =>
-                        setFormData({ ...formData, services: val })
-                      }
-                    >
-                      <div className="flex items-center gap-3">
-                        <RadioGroupItem
-                          value="Cortinas"
-                          id="option-one"
-                          className="border-border-custom"
+                    {services.map((service) => (
+                      <Field orientation="horizontal" key={service.id}>
+                        <Checkbox
+                          id={`service-${service.id}`}
+                          name="services"
+                          value={service.id} // 👈 valor del servicio
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setFormData({
+                                ...formData,
+                                services: [...formData.services, service.id],
+                              });
+                            } else {
+                              setFormData({
+                                ...formData,
+                                services: formData.services.filter(
+                                  (s) => s !== service.nome,
+                                ),
+                              });
+                            }
+                          }}
                         />
-                        <Label htmlFor="option-one">Cortinas</Label>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <RadioGroupItem
-                          value="Percianas"
-                          id="option-two"
-                          className="border-border-custom"
-                        />
-                        <Label htmlFor="option-two">Percianas</Label>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <RadioGroupItem
-                          value="Papeis de Paredes"
-                          id="option-three"
-                          className="border-border-custom"
-                        />
-                        <Label htmlFor="option-three">Papeis de Paredes</Label>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <RadioGroupItem
-                          value="Toldos"
-                          id="option-four"
-                          className="border-border-custom"
-                        />
-                        <Label htmlFor="option-four">Toldos</Label>
-                      </div>
-                    </RadioGroup>
+                        <Label htmlFor={`service-${service.id}`}>
+                          {service.nome}
+                        </Label>
+                      </Field>
+                    ))}
                   </FieldGroup>
 
                   <FieldGroup className="flex flex-col gap-2">
