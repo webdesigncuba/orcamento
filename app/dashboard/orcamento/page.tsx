@@ -1,6 +1,7 @@
 'use client'
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/lib/supabaseClients";
 import { useRouter } from "next/navigation";
@@ -36,7 +37,7 @@ export default function New(){
           toast.error('Erro na obtenção de orçamentos')
         }else{
           setOrcamentoData(data);
-          
+          console.log(orcamentoData);
         }
       }
       fetchOrcamentoNew();
@@ -61,6 +62,7 @@ export default function New(){
                     </TableRow>
                   </TableHeader>
                   <TableBody className="text-primary border-b">
+                    
                     {orcamentoData.map((orcamento) => (
                       <TableRow key={orcamento.id}>
                         <TableCell>{orcamento.name}</TableCell>
@@ -87,46 +89,53 @@ export default function New(){
                           >
                             Editar
                           </Button>
-                         
                         </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
               </div>
-
-              {/* Cards solo en móviles */}
-              <div className="block md:hidden space-y-4 text-primary">
-                {orcamentoData.map((orcamento) => (
-                  <div
-                    key={orcamento.id}
-                    className="border rounded p-4 bg-white shadow-sm"
-                  >
-                    <p>
-                      <strong>Nome:</strong> {orcamento.name}
-                    </p>
-                    <p>
-                      <strong>Localização:</strong> {orcamento.localization}
-                    </p>
-                    <p>
-                      <strong>Medidas:</strong> {orcamento.medid}
-                    </p>
-                    <p>
-                      <strong>Total:</strong> R$ {orcamento.total}
-                    </p>
-                    <div className="flex justify-end gap-2 mt-2">
-                     <Button
-                            size="sm"
-                            onClick={() => {
-                              handleEdit(orcamento.id);
-                            }}
-                          >
-                            Editar
-                      </Button>
+              {orcamentoData.length === 0 ? (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-center text-bold">
+                      Não há novos orçamentos.
+                    </CardTitle>
+                  </CardHeader>
+                </Card>
+              ) : (
+                <div className="block md:hidden space-y-4 text-primary">
+                  {orcamentoData.map((orcamento) => (
+                    <div
+                      key={orcamento.id}
+                      className="border rounded p-4 bg-white shadow-sm"
+                    >
+                      <p>
+                        <strong>Nome:</strong> {orcamento.name}
+                      </p>
+                      <p>
+                        <strong>Localização:</strong> {orcamento.localization}
+                      </p>
+                      <p>
+                        <strong>Medidas:</strong> {orcamento.medid}
+                      </p>
+                      <p>
+                        <strong>Total:</strong> R$ {orcamento.total}
+                      </p>
+                      <div className="flex justify-end gap-2 mt-2">
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            handleEdit(orcamento.id);
+                          }}
+                        >
+                          Editar
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
