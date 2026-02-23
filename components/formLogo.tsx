@@ -24,6 +24,7 @@ interface FormData {
   medid: string;
   observation: string;
   total: string;
+  status: string;
   services: string[]; // 👈 precisa ser um array
 }
 
@@ -35,6 +36,7 @@ export default function FormLogo() {
     medid: "",
     observation: "",
     total: "",
+    status: "new",
     services: [], // 👈 inicializa como array
   });
 
@@ -73,6 +75,7 @@ export default function FormLogo() {
           name: formData.name,
           localization: formData.localization,
           medid: formData.medid,
+          status:'new',
           observation: formData.observation,
         },
       ])

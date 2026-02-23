@@ -25,20 +25,18 @@ export function NavMain({
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
-          <SidebarMenuItem className="flex items-center gap-2">
-            
-          </SidebarMenuItem>
+          <SidebarMenuItem className="flex items-center gap-2"></SidebarMenuItem>
         </SidebarMenu>
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <Link href={item.url}>
-                {" "}
-                {/* 👈 aquí agregas el enlace */}
-                <SidebarMenuButton tooltip={item.title} className="hover:bg-primary hover:text-white" >
-                  {item.icon && <item.icon />}
-                  <span>{item.title}</span>
-                </SidebarMenuButton>
+              <Link
+                href={item.url}
+                className="flex items-center gap-2 hover:bg-primary hover:rounded focus:bg-primary focus:text-white focus:rounded focus: p-2 active:bg-primary hover:text-white e"
+
+              >
+                {item.icon && <item.icon />}
+                <span>{item.title}</span>
               </Link>
             </SidebarMenuItem>
           ))}
