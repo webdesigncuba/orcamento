@@ -20,8 +20,9 @@ interface OrcamentoServico {
   id: string;
   orcamento_id: string;
   servico_id: string;
-  servicos: { nome: string }[]; // 👈 array, não objeto único
+  servicos: { nome: string }[]; // 👈 array
 }
+
 
 
 
@@ -205,7 +206,9 @@ export default function OrcamentoPage() {
         <ul style={{ listStyle: "disc", paddingLeft: "20px" }}>
           {orcamentoServices.map((item) => (
             <li key={item.id}>
-              {item.servicos.length > 0 ? item.servicos[0].nome : "Sem nome"}
+              {item.servicos.map((s, i) => (
+                <span key={i}>{s.nome}</span>
+              ))}
             </li>
           ))}
         </ul>
