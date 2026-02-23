@@ -16,18 +16,21 @@ interface Orcamento {
   total: string;
 }
 
-interface OrcamentoService {
+interface OrcamentoServico {
   id: string;
   orcamento_id: string;
   servico_id: string;
+  servicos: { nome: string }[]; // 👈 array, não objeto único
 }
+
+
+
 
 export default function OrcamentoPage() {
   const { id } = useParams();
   const [orcamentoData, setOrcamentoData] = useState<Orcamento | null>(null);
-  const [orcamentoServices, setOrcamentoServices] = useState<
-    OrcamentoService[]
-  >([]);
+  const [orcamentoServices, setOrcamentoServices] = useState<OrcamentoServico[]>([]);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,12 +55,12 @@ export default function OrcamentoPage() {
         `,
           ) // 👈 join con la tabla servicos
           .eq("orcamento_id", data.id);
-
         if (!servicosError && servicosData) {
-          setOrcamentoServices(servicosData);
+          setOrcamentoServices(servicosData as OrcamentoServico[]);
         } else {
           console.log(servicosError);
         }
+
       }
     };
     if (id) fetchData();
@@ -201,12 +204,10 @@ export default function OrcamentoPage() {
         </h3>
         <ul style={{ listStyle: "disc", paddingLeft: "20px" }}>
           {orcamentoServices.map((item) => (
-    <li key={item.id}>
-      {item.servicos.nome}
-    </li>
-  ))}
-
-
+            <li key={item.id}>
+              {item.servicos.length > 0 ? item.servicos[0].nome : "Sem nome"}
+            </li>
+          ))}
         </ul>
       </div>
 
