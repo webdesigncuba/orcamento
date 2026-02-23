@@ -124,9 +124,9 @@ export default function FormLogo() {
           height={500}
           className="mt-10 w-full max-w-xs md:max-w-md"
         />
-        <Button className="w-full" onClick={() => router.push("/login")}>
+      {/*  <Button className="w-full" onClick={() => router.push("/login")}>
           Administracao
-        </Button>
+        </Button> */}
       </div>
       <div className="rounded-lg overflow-hidden bg-background-form">
         <h1 className="text-text text-xl md:text-2xl text-center p-4 font-bold font-form">
