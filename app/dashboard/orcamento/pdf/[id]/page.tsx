@@ -14,6 +14,8 @@ interface Orcamento {
   medid: string;
   observation: string;
   total: string;
+  number:string;
+  created_at: string;
 }
 
 interface OrcamentoServico {
@@ -145,17 +147,33 @@ export default function OrcamentoPage() {
           </div>
         </div>
       </header>
-
-      <p
+      <div
         style={{
-          textAlign: "right",
-          fontWeight: "600",
+          display: "flex",
+          justifyContent: "space-between",
           marginTop: "16px",
           marginBottom: "16px",
+          fontWeight: "600",
         }}
       >
-        Orçamento: {orcamentoData?.id}
-      </p>
+        <p >
+          Orçamento: {orcamentoData?.number}
+        </p>
+        
+        <p style={{ textAlign: "left" }}>
+          Data:{" "}
+          {orcamentoData?.created_at
+            ? new Date(orcamentoData.created_at).toLocaleString("pt-BR", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : ""}
+        </p>
+      </div>
+
 
       <div
         style={{
@@ -163,8 +181,8 @@ export default function OrcamentoPage() {
           padding: "16px",
           borderRadius: "8px",
           display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
+          flexDirection: "column", // 👈 apila verticalmente
+          gap: "8px", // 👈 espacio entre elementos
           marginBottom: "20px",
         }}
       >
@@ -179,9 +197,10 @@ export default function OrcamentoPage() {
         >
           CLIENTE
         </p>
-        <span style={{ marginLeft: "16px" }}>{orcamentoData?.name}</span>
-      </div>
 
+        <p className="text-primary font-bold">Nome: {orcamentoData?.name}</p>
+        <p className="text-primary font-bold">Endereço: {orcamentoData?.localization}</p>
+      </div>
       <div
         style={{
           border: "1px solid #ccc",
@@ -191,10 +210,8 @@ export default function OrcamentoPage() {
         }}
       >
         <h3
-          style={{
-            display: "inline-block",
+         style={{
             fontWeight: "500",
-            marginBottom: "8px",
             backgroundColor: "#44463e",
             color: "#fff",
             padding: "8px",
@@ -205,9 +222,30 @@ export default function OrcamentoPage() {
         </h3>
         <ul style={{ listStyle: "disc", paddingLeft: "20px" }}>
           {orcamentoServices.map((item) => (
-            <li key={item.id}>{item.servicos.nome}</li>
+            <li key={item.id} className="text-primary text-font">{item.servicos.nome}</li>
           ))}
         </ul>
+      </div>
+      <div
+        style={{
+          border: "1px solid #ccc",
+          padding: "16px",
+          borderRadius: "8px",
+          marginBottom: "30px",
+        }}
+      >
+        <h3
+         style={{
+            fontWeight: "500",
+            backgroundColor: "#44463e",
+            color: "#fff",
+            padding: "8px",
+            borderRadius: "4px",
+          }}
+        >
+          Observações
+        </h3>
+        <p className="text-primary font-bold">Endereço: {orcamentoData?.observation}</p>
       </div>
 
       <div

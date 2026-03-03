@@ -16,6 +16,7 @@ interface Orcamento {
   'observation': string,
   'total': string,
   'status': string,
+  'number': string,
 }
 
 export default function New(){
