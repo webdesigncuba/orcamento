@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Checkbox } from "./ui/checkbox";
+import { ChevronDownIcon } from "lucide-react";
 
 interface Services {
   id: string;
@@ -151,9 +152,18 @@ export default function FormLogo() {
           height={500}
           className="mt-10 w-full max-w-xs md:max-w-md"
         />
-      {/*  <Button className="w-full" onClick={() => router.push("/login")}>
-          Administracao
-        </Button> */}
+       <Button
+          className=" flex items-center justify-center gap-2 rounded-full md:hidden"
+          onClick={() => {
+            const form = document.getElementById("formulario");
+            if (form) {
+              form.scrollIntoView({ behavior: "smooth" });
+            }
+          }}
+        > 
+          Faça seu orçamento
+          <ChevronDownIcon className="w-5 h-5" />
+        </Button>
       </div>
       <div className="rounded-lg overflow-hidden bg-background-form">
         <h1 className="text-text text-xl md:text-2xl text-center p-4 font-bold font-form">
